@@ -6,12 +6,14 @@ interface PackageManagerProps {
   packages: Record<string, string>;
   onAddPackage: (packageName: string, version: string) => void;
   onRemovePackage: (packageName: string) => void;
+  lockedPackages?: string[]; // Packages that cannot be removed
 }
 
 export default function PackageManager({
   packages,
   onAddPackage,
   onRemovePackage,
+  lockedPackages = [],
 }: PackageManagerProps) {
   const [packageInput, setPackageInput] = useState("");
   const [versionInput, setVersionInput] = useState("latest");
@@ -89,38 +91,54 @@ export default function PackageManager({
           </div>
         ) : (
           <div className="space-y-2">
-            {Object.entries(packages).map(([name, version]) => (
-              <div
-                key={name}
-                className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">
-                    {name}
-                  </div>
-                  <div className="text-xs text-gray-500">v{version}</div>
-                </div>
-                <button
-                  onClick={() => onRemovePackage(name)}
-                  className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                  title="Remove package"
+            {Object.entries(packages).map(([name, version]) => {
+              const isLocked = lockedPackages.includes(name);
+              return (
+                <div
+                  key={name}
+                  className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${
+                    isLocked
+                      ? "bg-blue-50 border-blue-200"
+                      : "bg-white border-gray-200 hover:border-gray-300"
+                  }`}
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-medium text-gray-900 truncate">
+                        {name}
+                      </div>
+                      {isLocked && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                          Pre-installed
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">v{version}</div>
+                  </div>
+                  {!isLocked && (
+                    <button
+                      onClick={() => onRemovePackage(name)}
+                      className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      title="Remove package"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
