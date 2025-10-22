@@ -4,3 +4,24 @@
 .sandpack-wrapper-fill {
   height: 100%;
 }
+
+/* Make Sandpack preview fill parent */
+.sp-preview-container,
+.sp-preview-iframe,
+.sp-preview-actions,
+[class*="sp-"] iframe {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: none !important;
+}
+
+/* Target the Sandpack preview wrapper */
+[data-sp-preview] {
+  height: 100% !important;
+  min-height: 100% !important;
+}
+
+/* Ensure the preview component fills */
+.sp-stack {
+  height: 100% !important;
+}
