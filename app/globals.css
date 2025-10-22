@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Sandpack custom styles */
+.sandpack-wrapper-fill {
+  height: 100%;
+}
