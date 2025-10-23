@@ -36,13 +36,16 @@ const LOCKED_PACKAGES = Object.keys(BUNDLED_PACKAGE_MAP);
 const HIDDEN_PREAMBLE = `import React from 'react';
 import {
   Accordion,
+  ActionMenu,
   Alert,
+  Bleed,
   BodyLong,
   BodyShort,
   Box,
+  BoxNew,
   Button,
-  Checkbox,
   Chat,
+  Checkbox,
   Chips,
   Combobox,
   ConfirmationPanel,
@@ -52,15 +55,21 @@ import {
   Dropdown,
   ErrorMessage,
   ErrorSummary,
+  ExpansionCard,
   Fieldset,
   FileUpload,
+  FormProgress,
+  FormSummary,
   GuidePanel,
   Heading,
   HelpText,
   HGrid,
   HStack,
+  Hide,
+  InternalHeader,
   Label,
   Link,
+  LinkCard,
   List,
   Loader,
   Modal,
@@ -69,11 +78,14 @@ import {
   Pagination,
   Panel,
   Popover,
+  Process,
   ProgressBar,
+  Provider,
   Radio,
   ReadMore,
   Search,
   Select,
+  Show,
   Skeleton,
   Stepper,
   Switch,
@@ -116,7 +128,7 @@ export default function App() {
             </BodyLong>
 
             {/* Light theme section */}
-            <Panel border>
+            <BoxNew>
               <VStack gap="4">
                 <Heading size="medium">Light Theme Section</Heading>
                 <BodyShort>
@@ -130,10 +142,10 @@ export default function App() {
                   This is an info alert in the light theme!
                 </Alert>
               </VStack>
-            </Panel>
+            </BoxNew>
 
             {/* Dark theme section */}
-            <Panel border className="dark">
+            <BoxNew className="dark" borderColor="border-info">
               <VStack gap="4">
                 <Heading size="medium">Dark Theme Section</Heading>
                 <BodyShort>
@@ -147,7 +159,7 @@ export default function App() {
                   This is a success alert in the dark theme!
                 </Alert>
               </VStack>
-            </Panel>
+            </BoxNew>
           </VStack>
         </Page.Block>
       </Page>
@@ -190,29 +202,25 @@ function SandboxContent({
   }, [sandpack.files["/UserCode.js"]?.code, onCodeChange, preamble, sandpack]);
 
   return (
-    <div style={{ height: "100vh", width: "100%", display: "flex", flexDirection: "column" }}>
-      <PanelGroup direction="vertical" style={{ flex: "1 1 0", height: "100%" }}>
+    <div style={{ height: "100vh", width: "100%" }}>
+      <PanelGroup direction="vertical">
         <Panel defaultSize={50} minSize={20}>
-          <div className="sandpack-panel-wrapper" style={{ height: "100%", width: "100%" }}>
-            <SandpackPreview
-              showOpenInCodeSandbox={false}
-              showRefreshButton={true}
-            />
-          </div>
+          <SandpackPreview
+            showOpenInCodeSandbox={false}
+            showRefreshButton={true}
+          />
         </Panel>
 
         <PanelResizeHandle className="h-2 bg-gray-200 hover:bg-blue-400 transition-colors cursor-row-resize" />
 
         <Panel defaultSize={50} minSize={20}>
-          <div className="sandpack-panel-wrapper" style={{ height: "100%", width: "100%" }}>
-            <SandpackCodeEditor
-              showTabs={false}
-              showLineNumbers={true}
-              wrapContent={true}
-              extensions={[autocompletion()]}
-              extensionsKeymap={[...completionKeymap]}
-            />
-          </div>
+          <SandpackCodeEditor
+            showTabs={false}
+            showLineNumbers={true}
+            wrapContent={true}
+            extensions={[autocompletion()]}
+            extensionsKeymap={[...completionKeymap]}
+          />
         </Panel>
       </PanelGroup>
     </div>
