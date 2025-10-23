@@ -99,6 +99,56 @@ In `DesignSystemSandbox.tsx`:
 
 ### Adding More Pre-bundled Packages
 
+To add a new package to be pre-bundled:
+
+1. **Install the package**:
+   ```bash
+   npm install package-name
+   ```
+
+2. **Update `sandpack.config.ts`**:
+   ```typescript
+   export const BUNDLED_PACKAGES = [
+     "@navikt/ds-react",
+     "@navikt/ds-css",
+     "@navikt/ds-tokens",
+     "package-name", // Add here
+   ] as const;
+
+   export const BUNDLED_PACKAGE_MAP = {
+     "@navikt/ds": {
+       displayName: "@navikt/ds",
+       version: "bundled",
+       includes: BUNDLED_PACKAGES,
+     },
+     // Or create a new virtual package
+     "new-package": {
+       displayName: "new-package",
+       version: "bundled",
+       includes: ["package-name"],
+     },
+   } as const;
+   ```
+
+3. **Add exports in `ds/index.ts`**:
+   ```typescript
+   export * from "package-name";
+   ```
+
+4. **Rebuild**:
+   ```bash
+   npm run build:ds
+   ```
+
+The package will now:
+- Appear in the "Installed Packages" list with a "Pre-installed" badge
+- Be available for import in the sandbox without downloading from npm
+- Stay synchronized automatically via the config file
+
+**Note**: `sandpack.config.ts` is imported by both `tsup.config.js` (build time) and `DesignSystemSandbox.tsx` (runtime) to maintain a single source of truth.
+
+### Adding More Pre-bundled Packages (Old Instructions)
+
 1. Add the package to `ds/index.ts`:
    ```typescript
    export * from "new-package";

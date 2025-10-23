@@ -10,20 +10,27 @@ import {
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 import PackageManager from "./PackageManager";
+import { BUNDLED_PACKAGE_MAP } from "../../sandpack.config";
 
 // Import the bundled design system as raw text
 // @ts-ignore - raw imports are handled by webpack configuration
 import dsRaw from "../../ds/build-sandpack/index.mjs?raw";
-// @ts-ignore
-import dsCss from "../../ds/build-sandpack/index.css?raw";
+// @ts-ignore - Light theme CSS
+import dsLightCss from "../../ds/build-sandpack/light.css?raw";
+// @ts-ignore - Dark theme CSS
+import dsDarksideCss from "../../ds/build-sandpack/darkside.css?raw";
 
-// Pre-installed packages that are always available
-// NAV Design System is now bundled locally and doesn't need to be downloaded
-const DEFAULT_PACKAGES = {};
+// Pre-installed packages that are always available (derived from sandpack.config.ts)
+// These are bundled locally and don't need to be downloaded from npm
+const DEFAULT_PACKAGES = Object.fromEntries(
+  Object.entries(BUNDLED_PACKAGE_MAP).map(([name, config]) => [
+    name,
+    config.version,
+  ])
+);
 
 // Packages that cannot be removed (pre-installed)
-// @navikt/ds is pre-bundled and always available
-const LOCKED_PACKAGES = ["@navikt/ds"];
+const LOCKED_PACKAGES = Object.keys(BUNDLED_PACKAGE_MAP);
 
 // Hidden preamble with all imports - automatically prepended to user code
 const HIDDEN_PREAMBLE = `import React from 'react';
@@ -78,22 +85,69 @@ import {
   Timeline,
   ToggleGroup,
   Tooltip,
+  Theme,
   VStack,
 } from "@navikt/ds";
-import "@navikt/ds/styles.css";
 
 `;
 
 // Default user code - no imports needed!
-const DEFAULT_CODE = `export default function App() {
+// React components are already imported in the hidden preamble
+// Users just need to choose their theme by uncommenting one CSS import
+const DEFAULT_CODE = `// Choose your CSS (uncomment one):
+// import "@navikt/ds-css";  // Legacy CSS
+import "@navikt/ds-css/darkside";  // New CSS (with dark mode support)
+
+export default function App() {
   return (
-    <div style={{ padding: '20px' }}>
-      <Heading size="large" spacing>Design System Sandbox</Heading>
-      <BodyLong spacing>
-        All NAV Design System components are pre-imported and ready to use!
-      </BodyLong>
-      <Button>Try me!</Button>
-    </div>
+    <Theme>
+      <Page>
+        <Page.Block width="xl" gutters>
+          <VStack gap="8">
+            <Heading size="large">Design System Sandbox</Heading>
+
+            <BodyLong>
+              All NAV Design System components are pre-imported and ready to use!
+              Toggle between legacy and new CSS by switching the import above.
+            </BodyLong>
+
+            {/* Light theme section */}
+            <Panel border>
+              <VStack gap="4">
+                <Heading size="medium">Light Theme Section</Heading>
+                <BodyShort>
+                  This section uses the default light theme styling.
+                </BodyShort>
+                <HStack gap="4">
+                  <Button variant="primary">Primary Button</Button>
+                  <Button variant="secondary">Secondary</Button>
+                </HStack>
+                <Alert variant="info">
+                  This is an info alert in the light theme!
+                </Alert>
+              </VStack>
+            </Panel>
+
+            {/* Dark theme section */}
+            <Panel border className="dark">
+              <VStack gap="4">
+                <Heading size="medium">Dark Theme Section</Heading>
+                <BodyShort>
+                  This section uses the dark theme via .dark className.
+                </BodyShort>
+                <HStack gap="4">
+                  <Button variant="primary">Primary Button</Button>
+                  <Button variant="secondary">Secondary</Button>
+                </HStack>
+                <Alert variant="success">
+                  This is a success alert in the dark theme!
+                </Alert>
+              </VStack>
+            </Panel>
+          </VStack>
+        </Page.Block>
+      </Page>
+    </Theme>
   );
 }`;
 
@@ -227,13 +281,43 @@ export default function DesignSystemSandbox() {
             hidden: true,
             code: dsRaw,
           },
-          "/node_modules/@navikt/ds/styles.css": {
+          // Add @navikt/ds-css package for both light and dark themes
+          "/node_modules/@navikt/ds-css/package.json": {
             hidden: true,
-            code: dsCss,
+            code: JSON.stringify({
+              name: "@navikt/ds-css",
+              main: "./index.js",
+              exports: {
+                ".": "./index.js",
+                "./darkside": "./darkside.js",
+              },
+            }),
+          },
+          "/node_modules/@navikt/ds-css/index.js": {
+            hidden: true,
+            code: `import './index.css';\nexport {};`,
+          },
+          "/node_modules/@navikt/ds-css/index.css": {
+            hidden: true,
+            code: dsLightCss,
+          },
+          "/node_modules/@navikt/ds-css/darkside.js": {
+            hidden: true,
+            code: `import './darkside.css';\nexport {};`,
+          },
+          "/node_modules/@navikt/ds-css/darkside.css": {
+            hidden: true,
+            code: dsDarksideCss,
           },
         }}
         customSetup={{
-          dependencies: packages,
+          // Only include packages that are NOT pre-bundled
+          // Pre-bundled packages are already in /node_modules via files above
+          dependencies: Object.fromEntries(
+            Object.entries(packages).filter(
+              ([name]) => !LOCKED_PACKAGES.includes(name)
+            )
+          ),
         }}
         options={{
           visibleFiles: ["/UserCode.js"],
