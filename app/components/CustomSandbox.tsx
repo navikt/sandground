@@ -79,10 +79,10 @@ export default function CustomSandbox() {
   }, [code, isReady]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="custom-sandbox-root flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
+      <div className="custom-sandbox-sidebar w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="sidebar-header p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
             Custom Sandbox
           </h2>
@@ -91,8 +91,8 @@ export default function CustomSandbox() {
           </p>
         </div>
 
-        <div className="p-4 flex-1 overflow-auto">
-          <div className="space-y-4">
+        <div className="sidebar-content p-4 flex-1 overflow-auto">
+          <div className="sidebar-sections space-y-4">
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-2">
                 Features
@@ -154,10 +154,10 @@ export default function CustomSandbox() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        <PanelGroup direction="vertical">
-          <Panel defaultSize={50} minSize={20}>
-            <div className="h-full bg-white border-b border-gray-200 relative">
+      <div className="main-content-area flex-1 flex flex-col">
+        <PanelGroup direction="vertical" className="panel-group-vertical">
+          <Panel defaultSize={50} minSize={20} className="preview-panel">
+            <div className="preview-container h-full bg-white border-b border-gray-200 relative">
               {!isReady && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
                   <div className="text-gray-600">Loading preview...</div>
@@ -172,9 +172,9 @@ export default function CustomSandbox() {
             </div>
           </Panel>
 
-          <PanelResizeHandle className="h-2 bg-gray-200 hover:bg-blue-400 transition-colors cursor-row-resize" />
+          <PanelResizeHandle className="resize-handle h-2 bg-gray-200 hover:bg-blue-400 transition-colors cursor-row-resize" />
 
-          <Panel defaultSize={50} minSize={20}>
+          <Panel defaultSize={50} minSize={20} className="editor-panel">
             <CodeMirror
               value={code}
               height="100%"

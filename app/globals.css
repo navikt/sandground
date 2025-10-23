@@ -1,27 +1,47 @@
 @import "tailwindcss";
 
-/* Sandpack custom styles */
-.sandpack-wrapper-fill {
-  height: 100%;
-}
+/* Use CSS layers to control cascade order without !important */
+/* Sandpack's Stitches styles (runtime CSS-in-JS) will have lower specificity than layer overrides */
+@layer sandpack-overrides {
+  /* Sandpack custom styles */
+  /* These classes are mapped to Sandpack's internal classes via the classes prop */
 
-/* Make Sandpack preview fill parent */
-.sp-preview-container,
-.sp-preview-iframe,
-.sp-preview-actions,
-[class*="sp-"] iframe {
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: none !important;
-}
+  .sandpack-wrapper-fill {
+    height: 100%;
+    width: 100%;
+  }
 
-/* Target the Sandpack preview wrapper */
-[data-sp-preview] {
-  height: 100% !important;
-  min-height: 100% !important;
-}
+  /* The main Sandpack wrapper needs to grow to fill remaining space in flex container */
+  .sandpack-main-wrapper {
+    height: 100%;
+    width: 100%;
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
 
-/* Ensure the preview component fills */
-.sp-stack {
-  height: 100% !important;
+  /* Sandpack layout container should also fill */
+  .sandpack-layout-container {
+    height: 100%;
+    width: 100%;
+  }
+
+  /* The stack component is critical for layout */
+  .sandpack-stack {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Preview and editor containers should fill their allocated Panel space */
+  .sandpack-preview-container,
+  .sandpack-code-editor {
+    height: 100%;
+  }
+
+  /* The preview iframe itself should fill its container */
+  .sandpack-preview-iframe {
+    height: 100%;
+    width: 100%;
+  }
 }

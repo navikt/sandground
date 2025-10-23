@@ -98,13 +98,17 @@ const DEFAULT_CODE = `// Choose your CSS (uncomment one):
 // import "@navikt/ds-css";  // Legacy CSS
 import "@navikt/ds-css/darkside";  // New CSS (with dark mode support)
 
+// import { formatDistance, subDays } from "date-fns"
+
 export default function App() {
+  let datestr = ""
+  // datestr = formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true })
   return (
     <Theme>
       <Page>
         <Page.Block width="xl" gutters>
           <VStack gap="8">
-            <Heading size="large">Design System Sandbox</Heading>
+            <Heading size="large">Design System Sandbox {datestr}</Heading>
 
             <BodyLong>
               All NAV Design System components are pre-imported and ready to use!
@@ -186,25 +190,29 @@ function SandboxContent({
   }, [sandpack.files["/UserCode.js"]?.code, onCodeChange, preamble, sandpack]);
 
   return (
-    <div style={{ height: "100vh", width: "100vw" }}>
-      <PanelGroup direction="vertical">
+    <div style={{ height: "100vh", width: "100%", display: "flex", flexDirection: "column" }}>
+      <PanelGroup direction="vertical" style={{ flex: "1 1 0", height: "100%" }}>
         <Panel defaultSize={50} minSize={20}>
-          <SandpackPreview
-            showOpenInCodeSandbox={false}
-            showRefreshButton={true}
-          />
+          <div className="sandpack-panel-wrapper" style={{ height: "100%", width: "100%" }}>
+            <SandpackPreview
+              showOpenInCodeSandbox={false}
+              showRefreshButton={true}
+            />
+          </div>
         </Panel>
 
         <PanelResizeHandle className="h-2 bg-gray-200 hover:bg-blue-400 transition-colors cursor-row-resize" />
 
         <Panel defaultSize={50} minSize={20}>
-          <SandpackCodeEditor
-            showTabs={false}
-            showLineNumbers={true}
-            wrapContent={true}
-            extensions={[autocompletion()]}
-            extensionsKeymap={[...completionKeymap]}
-          />
+          <div className="sandpack-panel-wrapper" style={{ height: "100%", width: "100%" }}>
+            <SandpackCodeEditor
+              showTabs={false}
+              showLineNumbers={true}
+              wrapContent={true}
+              extensions={[autocompletion()]}
+              extensionsKeymap={[...completionKeymap]}
+            />
+          </div>
         </Panel>
       </PanelGroup>
     </div>
@@ -232,10 +240,10 @@ export default function DesignSystemSandbox() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="design-system-sandbox-root flex h-screen bg-gray-50">
       {/* Sidebar for Package Management */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
+      <div className="design-system-sidebar w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="sidebar-header p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
             Design System Sandbox
           </h2>
@@ -323,8 +331,12 @@ export default function DesignSystemSandbox() {
           visibleFiles: ["/UserCode.js"],
           activeFile: "/UserCode.js",
           classes: {
-            "sp-wrapper": "sandpack-wrapper-fill",
-            "sp-layout": "sandpack-wrapper-fill",
+            "sp-wrapper": "sandpack-wrapper-fill sandpack-main-wrapper",
+            "sp-layout": "sandpack-wrapper-fill sandpack-layout-container",
+            "sp-stack": "sandpack-stack",
+            "sp-preview-container": "sandpack-preview-container",
+            "sp-preview-iframe": "sandpack-preview-iframe",
+            "sp-code-editor": "sandpack-code-editor",
           },
         }}
       >
